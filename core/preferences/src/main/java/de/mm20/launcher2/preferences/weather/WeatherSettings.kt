@@ -164,6 +164,23 @@ class WeatherSettings internal constructor(
         }
     }
 
+    /** Credential stored for [providerId], if the user entered one. */
+    fun providerApiKey(providerId: String) = launcherDataStore.data.map {
+        it.weatherProviderSettings[providerId]?.apiKey
+    }.distinctUntilChanged()
+
+    fun setProviderApiKey(providerId: String, apiKey: String?) {
+        launcherDataStore.update {
+            val providerSettings = it.weatherProviderSettings.getOrDefault(providerId, ProviderSettings())
+            it.copy(
+                weatherLastUpdate = 0L,
+                weatherProviderSettings = it.weatherProviderSettings.toMutableMap().apply {
+                    put(providerId, providerSettings.copy(apiKey = apiKey?.trim()?.takeIf { k -> k.isNotEmpty() }))
+                }
+            )
+        }
+    }
+
     val providerId = launcherDataStore.data.map { it.weatherProvider }
         .distinctUntilChanged()
 

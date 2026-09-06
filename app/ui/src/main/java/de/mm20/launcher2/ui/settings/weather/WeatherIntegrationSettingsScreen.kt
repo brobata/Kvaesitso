@@ -1,5 +1,7 @@
 package de.mm20.launcher2.ui.settings.weather
 
+import de.mm20.launcher2.ui.component.preferences.TextPreference
+import de.mm20.launcher2.weather.tempest.TempestProvider
 import android.app.PendingIntent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.padding
@@ -96,6 +98,23 @@ fun WeatherIntegrationSettingsScreen() {
                     },
                     value = weatherProvider
                 )
+                if (weatherProvider == TempestProvider.Id) {
+                    val tempestToken by viewModel.tempestToken.collectAsStateWithLifecycle(null)
+                    val hasBuiltInToken = remember { TempestProvider.getBuiltInToken(context) != null }
+                    TextPreference(
+                        title = stringResource(R.string.preference_weather_tempest_token),
+                        value = tempestToken ?: "",
+                        summary = when {
+                            !tempestToken.isNullOrBlank() -> stringResource(
+                                R.string.preference_weather_tempest_token_set,
+                                tempestToken!!.takeLast(4)
+                            )
+                            hasBuiltInToken -> stringResource(R.string.preference_weather_tempest_token_builtin)
+                            else -> stringResource(R.string.preference_weather_tempest_token_unset)
+                        },
+                        onValueChanged = { viewModel.setTempestToken(it) },
+                    )
+                }
             }
 
         }

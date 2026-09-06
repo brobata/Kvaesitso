@@ -1142,4 +1142,14 @@
     <string name="widget_config_favorites_hotkeys">Number hotkeys</string>
     <string name="widget_config_favorites_hotkeys_summary">Press 1–9 or 0 on the home screen to launch</string>
     <string name="widget_config_favorites_menu_icons">Show icons</string>
+    <string name="provider_tempest">Tempest (WeatherFlow)</string>
+    <string name="preference_weather_tempest_token">Tempest access token</string>
+    <string name="preference_weather_tempest_token_unset">Not set. Create one at tempestwx.com › Settings › Data Authorizations</string>
+    <string name="preference_weather_tempest_token_builtin">Using the token compiled into this build</string>
+    <string name="preference_weather_tempest_token_set">Token saved (ends in %1$s)</string>
+    <string name="preference_terminal_status_line">Status line</string>
+    <string name="preference_terminal_status_line_summary">tmux-style bar at the bottom: window, battery, date and time</string>
+    <string name="clock_style_terminal">Terminal</string>
+    <string name="widget_config_weather_terminal">Terminal layout</string>
+    <string name="widget_config_weather_terminal_summary">Plain monospace lines instead of the icon card</string>
 </resources>

@@ -1,5 +1,6 @@
 package de.mm20.launcher2.ui.settings.weather
 
+import de.mm20.launcher2.weather.tempest.TempestProvider
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,6 +35,12 @@ class WeatherIntegrationSettingsScreenVM : ViewModel(), KoinComponent {
     val weatherProviderPluginState = weatherProvider.flatMapLatest {
         it?.let { pluginService.getPluginWithState(it) } ?: flowOf(null)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
+    val tempestToken = weatherSettings.providerApiKey(TempestProvider.Id)
+
+    fun setTempestToken(token: String) {
+        weatherSettings.setProviderApiKey(TempestProvider.Id, token)
+    }
 
     val autoLocation = weatherSettings.autoLocation
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)

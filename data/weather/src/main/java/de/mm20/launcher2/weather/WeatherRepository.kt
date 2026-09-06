@@ -18,6 +18,7 @@ import de.mm20.launcher2.weather.breezy.BreezyWeatherProvider
 import de.mm20.launcher2.weather.brightsky.BrightSkyProvider
 import de.mm20.launcher2.weather.metno.MetNoProvider
 import de.mm20.launcher2.weather.openweathermap.OpenWeatherMapProvider
+import de.mm20.launcher2.weather.tempest.TempestProvider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.koin.core.component.KoinComponent
@@ -181,6 +182,12 @@ internal class WeatherRepositoryImpl(
                 )
             )
         }
+        providers.add(
+            WeatherProviderInfo(
+                TempestProvider.Id,
+                context.getString(R.string.provider_tempest)
+            )
+        )
         if (BreezyWeatherProvider.isAvailable(context)) {
             providers.add(
                 WeatherProviderInfo(

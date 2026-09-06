@@ -117,6 +117,8 @@ data class LauncherSettingsData internal constructor(
     val searchBarKeyboard: Boolean = true,
     /** Typing on a physical keyboard opens search and seeds it with the first key press. */
     val hardwareKeyboardSearch: Boolean = true,
+    /** tmux-style status line pinned to the bottom of the launcher. */
+    val uiTerminalStatusLine: Boolean = false,
     val searchLaunchOnEnter: Boolean = true,
     val searchBarBottom: Boolean = false,
     val searchBarFixed: Boolean = false,
@@ -254,6 +256,7 @@ internal enum class ClockWidgetStyleEnum {
     Segment,
     Empty,
     Custom,
+    Terminal,
 }
 
 @Serializable
@@ -298,6 +301,11 @@ sealed interface ClockWidgetStyle {
     @Serializable
     @SerialName("empty")
     data object Empty : ClockWidgetStyle
+
+    /** Shell-style clock: a `date` prompt line, monospace time, and the date underneath. */
+    @Serializable
+    @SerialName("terminal")
+    data object Terminal : ClockWidgetStyle
 
     @Serializable
     @SerialName("custom")
@@ -446,6 +454,8 @@ data class ProviderSettings(
     val locationId: String? = null,
     val locationName: String? = null,
     val managedLocation: Boolean = false,
+    /** Per-provider credential entered by the user (e.g. a Tempest personal access token). */
+    val apiKey: String? = null,
 )
 
 @Serializable
