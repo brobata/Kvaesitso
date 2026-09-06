@@ -268,6 +268,17 @@ class UiSettings internal constructor(
         }
     }
 
+    val hardwareKeyboardSearch
+        get() = launcherDataStore.data.map {
+            it.hardwareKeyboardSearch
+        }.distinctUntilChanged()
+
+    fun setHardwareKeyboardSearch(enabled: Boolean) {
+        launcherDataStore.update {
+            it.copy(hardwareKeyboardSearch = enabled)
+        }
+    }
+
     val openKeyboardOnSearch
         get() = launcherDataStore.data.map {
             it.searchBarKeyboard

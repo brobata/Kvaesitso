@@ -115,6 +115,8 @@ data class LauncherSettingsData internal constructor(
     val searchBarStyle: SearchBarStyle = SearchBarStyle.Transparent,
     val searchBarColors: SearchBarColors = SearchBarColors.Auto,
     val searchBarKeyboard: Boolean = true,
+    /** Typing on a physical keyboard opens search and seeds it with the first key press. */
+    val hardwareKeyboardSearch: Boolean = true,
     val searchLaunchOnEnter: Boolean = true,
     val searchBarBottom: Boolean = false,
     val searchBarFixed: Boolean = false,
@@ -325,6 +327,8 @@ enum class SearchBarStyle {
     Transparent,
     Solid,
     Hidden,
+    /** Shell-prompt look: monospace input behind a `$` prompt, no card. */
+    Terminal,
 }
 
 @Serializable

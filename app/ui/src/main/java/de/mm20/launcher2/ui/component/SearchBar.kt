@@ -1,5 +1,11 @@
 package de.mm20.launcher2.ui.component
 
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.TextRange
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
@@ -68,6 +74,12 @@ fun SearchBar(
     val transition = updateTransition(level, label = "Searchbar")
     val context = LocalContext.current
 
+    // Terminal shares Transparent's resting behaviour (no card over the wallpaper).
+    val transparentLike = style == SearchBarStyle.Transparent || style == SearchBarStyle.Terminal
+    val inputTextStyle = MaterialTheme.typography.titleMedium.let {
+        if (style == SearchBarStyle.Terminal) it.copy(fontFamily = FontFamily.Monospace) else it
+    }
+
     val elevation by transition.animateDp(
         label = "elevation",
         transitionSpec = {
@@ -83,6 +95,7 @@ fun SearchBar(
         }
     ) {
         when {
+            style == SearchBarStyle.Terminal -> 0.dp
             it == SearchBarLevel.Resting && style != SearchBarStyle.Solid -> 0.dp
             it == SearchBarLevel.Raised -> 8.dp
             else -> 0.dp
@@ -103,7 +116,7 @@ fun SearchBar(
         }) {
         when {
             it == SearchBarLevel.Active -> MaterialTheme.transparency.surface
-            style != SearchBarStyle.Transparent -> 1f
+            !transparentLike -> 1f
             it == SearchBarLevel.Resting -> 0f
             else -> 1f
         }
@@ -122,7 +135,7 @@ fun SearchBar(
             }
         }) {
         when {
-            style != SearchBarStyle.Transparent -> MaterialTheme.colorScheme.onSurface
+            !transparentLike -> MaterialTheme.colorScheme.onSurface
             it == SearchBarLevel.Resting -> if (darkColors) Color(0, 0, 0, 180) else Color.White
             else -> MaterialTheme.colorScheme.onSurface
         }
@@ -149,21 +162,38 @@ fun SearchBar(
                     modifier = Modifier.height(48.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        modifier = Modifier.padding(12.dp),
-                        painter = painterResource(R.drawable.search_24px),
-                        contentDescription = null,
-                        tint = contentColor
-                    )
+                    if (style == SearchBarStyle.Terminal) {
+                        Text(
+                            modifier = Modifier.padding(start = 16.dp, end = 10.dp),
+                            text = "$",
+                            style = inputTextStyle.copy(fontWeight = FontWeight.Bold),
+                            color = contentColor,
+                        )
+                    } else {
+                        Icon(
+                            modifier = Modifier.padding(12.dp),
+                            painter = painterResource(R.drawable.search_24px),
+                            contentDescription = null,
+                            tint = contentColor
+                        )
+                    }
                     Box(
                         modifier = Modifier.weight(1f)
                     ) {
                         if (value.isEmpty()) {
                             Text(
                                 text = stringResource(R.string.search_bar_placeholder),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = contentColor
+                                style = inputTextStyle,
+                                color = contentColor.copy(alpha = if (style == SearchBarStyle.Terminal) 0.6f else contentColor.alpha)
                             )
+                        }
+                        // Keep a TextFieldValue so text injected from outside (hardware
+                        // type-to-search) lands with the cursor at the end, not at index 0.
+                        var textFieldValue by remember {
+                            mutableStateOf(TextFieldValue(value, TextRange(value.length)))
+                        }
+                        if (textFieldValue.text != value) {
+                            textFieldValue = TextFieldValue(value, TextRange(value.length))
                         }
                         BasicTextField(
                             modifier = Modifier
@@ -175,12 +205,15 @@ fun SearchBar(
                                 .semantics {
                                     contentDescription = context.getString(R.string.search_bar_placeholder)
                                 },
-                            textStyle = MaterialTheme.typography.titleMedium.copy(
+                            textStyle = inputTextStyle.copy(
                                 color = contentColor
                             ),
                             singleLine = true,
-                            value = value,
-                            onValueChange = onValueChange,
+                            value = textFieldValue,
+                            onValueChange = {
+                                textFieldValue = it
+                                if (it.text != value) onValueChange(it.text)
+                            },
                             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                             keyboardOptions = KeyboardOptions(
                                 imeAction = ImeAction.Go,

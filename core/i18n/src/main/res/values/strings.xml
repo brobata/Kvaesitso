@@ -1125,4 +1125,21 @@
     <string name="typo_preview_medium2">Preview</string>
     <string name="typo_preview_long">The quick brown fox\njumps over 1234790</string>
     <string name="preference_category_donate">Support the development</string>
+
+    <!-- Titan fork: hardware keyboard, favorites menu, terminal look -->
+    <string name="preference_search_bar_style_terminal">Terminal</string>
+    <string name="preference_hardware_keyboard_search">Type to search</string>
+    <string name="preference_hardware_keyboard_search_summary">Typing on a physical keyboard opens search with the first key press</string>
+    <string name="preference_colors_terminal">Terminal</string>
+    <string name="preference_transparencies_opaque">Opaque</string>
+    <string name="preference_category_presets">Presets</string>
+    <string name="preference_preset_terminal">Terminal look</string>
+    <string name="preference_preset_terminal_summary">Monospace type, green on black, square corners, $ prompt, favorites as a numbered menu</string>
+    <string name="preference_preset_default">Default look</string>
+    <string name="preference_preset_default_summary">Restore the stock appearance</string>
+    <string name="widget_config_favorites_layout_grid">Grid</string>
+    <string name="widget_config_favorites_layout_menu">Menu</string>
+    <string name="widget_config_favorites_hotkeys">Number hotkeys</string>
+    <string name="widget_config_favorites_hotkeys_summary">Press 1–9 or 0 on the home screen to launch</string>
+    <string name="widget_config_favorites_menu_icons">Show icons</string>
 </resources>

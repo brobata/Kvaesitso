@@ -110,6 +110,13 @@ class HomescreenSettingsScreenVM(
         uiSettings.setSearchBarStyle(searchBarStyle)
     }
 
+    val hardwareKeyboardSearch = uiSettings.hardwareKeyboardSearch
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
+
+    fun setHardwareKeyboardSearch(enabled: Boolean) {
+        uiSettings.setHardwareKeyboardSearch(enabled)
+    }
+
     val fixedSearchBar = uiSettings.fixedSearchBar
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 

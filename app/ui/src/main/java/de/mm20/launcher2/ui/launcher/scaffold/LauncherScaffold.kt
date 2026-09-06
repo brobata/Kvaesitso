@@ -1,5 +1,14 @@
 package de.mm20.launcher2.ui.launcher.scaffold
 
+import org.koin.compose.koinInject
+import de.mm20.launcher2.ui.launcher.sheets.LocalBottomSheetManager
+import de.mm20.launcher2.ui.launcher.keyboard.LocalHomeHotkeys
+import de.mm20.launcher2.ui.launcher.keyboard.LocalHardwareKeyDispatcher
+import de.mm20.launcher2.preferences.ui.UiSettings
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.focusTarget
+import androidx.compose.runtime.DisposableEffect
+import android.view.KeyEvent
 import android.app.WallpaperManager
 import android.view.animation.PathInterpolator
 import androidx.activity.compose.LocalActivity
@@ -991,8 +1000,19 @@ internal fun LauncherScaffold(
 
     val hazeState = rememberHazeState(blurEnabled = isAtLeastApiLevel(33))
 
+    val uiSettings: UiSettings = koinInject()
+    val hardwareKeyboardSearch by remember { uiSettings.hardwareKeyboardSearch }.collectAsState(true)
+    val hardwareKeys = LocalHardwareKeyDispatcher.current
+    val homeHotkeys = LocalHomeHotkeys.current
+    val sheetManager = LocalBottomSheetManager.current
+
+    /** True while some descendant (search field, note widget, ...) owns keyboard focus. */
+    var hasDescendantFocus by remember { mutableStateOf(false) }
+
     BoxWithConstraints(
-        modifier = modifier,
+        modifier = modifier
+            .onFocusChanged { hasDescendantFocus = it.hasFocus && !it.isFocused }
+            .focusTarget(),
     ) {
         val width = this.maxWidth
         val height = this.maxHeight
@@ -1052,6 +1072,39 @@ internal fun LauncherScaffold(
                     }
                 )
             }
+
+        // Hardware keyboard: hotkeys on the idle home screen, otherwise the first printable key
+        // opens search and becomes its first character. Never interferes while a text field or a
+        // bottom sheet has the keyboard, or while the scaffold is locked (widget edit mode).
+        DisposableEffect(hardwareKeys, state) {
+            if (hardwareKeys == null) return@DisposableEffect onDispose {}
+            hardwareKeys.handler = handler@{ event ->
+                if (event.action != KeyEvent.ACTION_DOWN || event.repeatCount > 0) return@handler false
+                if (event.isCtrlPressed || event.isMetaPressed) return@handler false
+                if (state.isLocked || hasDescendantFocus) return@handler false
+                if (sheetManager.customizeSearchableSheetShown.value != null ||
+                    sheetManager.editFavoritesSheetShown.value ||
+                    sheetManager.hiddenItemsSheetShown.value ||
+                    sheetManager.editTagSheetShown.value != null ||
+                    sheetManager.failedGestureSheetShown.value != null
+                ) return@handler false
+
+                val codePoint = event.unicodeChar
+                if (codePoint == 0 || Character.isISOControl(codePoint) || Character.isWhitespace(codePoint)) {
+                    return@handler false
+                }
+                val char = codePoint.toChar()
+
+                val isHomeIdle = !state.isSettledOnSecondaryPage && state.currentProgress == 0f
+                if (isHomeIdle && homeHotkeys?.dispatch(char) == true) return@handler true
+
+                if (!hardwareKeyboardSearch) return@handler false
+                searchVM.search(searchVM.searchQuery.value + char)
+                state.isSearchBarFocused = true
+                true
+            }
+            onDispose { hardwareKeys.handler = null }
+        }
 
         LaunchedEffect(state.isAtTop, state.isAtBottom) {
             if (state.currentProgress > 0f && state.currentProgress < 1f) {

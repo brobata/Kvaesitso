@@ -1,5 +1,10 @@
 package de.mm20.launcher2.ui.launcher
 
+import de.mm20.launcher2.ui.launcher.keyboard.LocalHomeHotkeys
+import de.mm20.launcher2.ui.launcher.keyboard.LocalHardwareKeyDispatcher
+import de.mm20.launcher2.ui.launcher.keyboard.HomeHotkeyRegistry
+import de.mm20.launcher2.ui.launcher.keyboard.HardwareKeyDispatcher
+import android.view.KeyEvent
 import android.app.WallpaperManager
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -91,6 +96,15 @@ abstract class SharedLauncherActivity(
 
     internal val enterHomeTransitionManager = EnterHomeTransitionManager()
 
+    /** Hardware key events are offered to the scaffold before the view hierarchy sees them. */
+    internal val hardwareKeyDispatcher = HardwareKeyDispatcher()
+    internal val homeHotkeys = HomeHotkeyRegistry()
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (hardwareKeyDispatcher.dispatch(event)) return true
+        return super.dispatchKeyEvent(event)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         if (isAtLeastApiLevel(29)) {
@@ -128,6 +142,8 @@ abstract class SharedLauncherActivity(
                 LocalWallpaperColors provides wallpaperColors,
                 LocalPreferDarkContentOverWallpaper provides (!dimBackground && wallpaperColors.supportsDarkText),
                 LocalBottomSheetManager provides bottomSheetManager,
+                LocalHardwareKeyDispatcher provides hardwareKeyDispatcher,
+                LocalHomeHotkeys provides homeHotkeys,
             ) {
                 LauncherTheme {
                     ProvideCompositionLocals {

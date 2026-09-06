@@ -179,6 +179,16 @@ fun HomescreenSettingsScreen() {
                         viewModel.setFixedSearchBar(it)
                     },
                 )
+                val hardwareKeyboardSearch by viewModel.hardwareKeyboardSearch.collectAsStateWithLifecycle()
+                SwitchPreference(
+                    title = stringResource(R.string.preference_hardware_keyboard_search),
+                    summary = stringResource(R.string.preference_hardware_keyboard_search_summary),
+                    icon = R.drawable.keyboard_24px,
+                    value = hardwareKeyboardSearch,
+                    onValueChanged = {
+                        viewModel.setHardwareKeyboardSearch(it)
+                    },
+                )
             }
         }
         item {
@@ -333,6 +343,7 @@ fun SearchBarStylePreference(
                                         SearchBarStyle.Transparent -> R.string.preference_search_bar_style_transparent
                                         SearchBarStyle.Solid -> R.string.preference_search_bar_style_solid
                                         SearchBarStyle.Hidden -> R.string.preference_search_bar_style_hidden
+                                        SearchBarStyle.Terminal -> R.string.preference_search_bar_style_terminal
                                     }
                                 ),
                                 style = MaterialTheme.typography.titleSmall,
@@ -364,7 +375,7 @@ fun SearchBarStylePreference(
                                 .clip(MaterialTheme.shapes.medium)
                                 .background(
                                     when {
-                                        style != SearchBarStyle.Transparent -> MaterialTheme.colorScheme.inverseSurface
+                                        style != SearchBarStyle.Transparent && style != SearchBarStyle.Terminal -> MaterialTheme.colorScheme.inverseSurface
                                         LocalDarkTheme.current != darkColors -> MaterialTheme.colorScheme.surfaceContainer
                                         else -> MaterialTheme.colorScheme.inverseSurface
                                     }
@@ -389,7 +400,7 @@ fun SearchBarStylePreference(
                                     }
                             )
                         }
-                        if (style == SearchBarStyle.Transparent) {
+                        if (style == SearchBarStyle.Transparent || style == SearchBarStyle.Terminal) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
