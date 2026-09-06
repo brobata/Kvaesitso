@@ -119,6 +119,8 @@ data class LauncherSettingsData internal constructor(
     val hardwareKeyboardSearch: Boolean = true,
     /** tmux-style status line pinned to the bottom of the launcher. */
     val uiTerminalStatusLine: Boolean = false,
+    /** Terminal mode: every widget renders as command output, no cards, no icons. */
+    val uiTerminalMode: Boolean = false,
     val searchLaunchOnEnter: Boolean = true,
     val searchBarBottom: Boolean = false,
     val searchBarFixed: Boolean = false,
@@ -167,7 +169,8 @@ data class LauncherSettingsData internal constructor(
 
     val stateTagsMultiline: Boolean = false,
 
-    val weatherProvider: String = "metno",
+    /** Open-Meteo needs no key or contact, so a fresh install shows weather with location alone. */
+    val weatherProvider: String = "openmeteo",
     val weatherAutoLocation: Boolean = true,
     val weatherLocation: LatLon? = null,
     val weatherLocationName: String? = null,

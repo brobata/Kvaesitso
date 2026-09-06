@@ -279,6 +279,17 @@ class UiSettings internal constructor(
         }
     }
 
+    val terminalMode
+        get() = launcherDataStore.data.map {
+            it.uiTerminalMode
+        }.distinctUntilChanged()
+
+    fun setTerminalMode(enabled: Boolean) {
+        launcherDataStore.update {
+            it.copy(uiTerminalMode = enabled)
+        }
+    }
+
     val terminalStatusLine
         get() = launcherDataStore.data.map {
             it.uiTerminalStatusLine

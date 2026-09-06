@@ -1,5 +1,7 @@
 package de.mm20.launcher2.ui.launcher.widgets.weather
 
+import de.mm20.launcher2.ui.component.terminal.slugify
+import de.mm20.launcher2.ui.component.terminal.TerminalPrompt
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,12 +53,10 @@ internal fun TerminalWeather(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        Text(
-            text = "❯ weather  # ${forecast.location}",
-            style = mono,
-            color = dim,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+        TerminalPrompt(
+            host = slugify(forecast.location).ifEmpty { "weather" },
+            dir = "~/weather",
+            command = "now",
         )
         Row(
             modifier = Modifier.padding(top = 6.dp),

@@ -189,11 +189,20 @@ fun HomescreenSettingsScreen() {
                         viewModel.setHardwareKeyboardSearch(it)
                     },
                 )
+                val terminalMode by viewModel.terminalMode.collectAsStateWithLifecycle()
+                SwitchPreference(
+                    title = stringResource(R.string.preference_terminal_mode),
+                    summary = stringResource(R.string.preference_terminal_mode_summary),
+                    icon = R.drawable.terminal_24px,
+                    value = terminalMode,
+                    onValueChanged = {
+                        viewModel.setTerminalMode(it)
+                    },
+                )
                 val terminalStatusLine by viewModel.terminalStatusLine.collectAsStateWithLifecycle()
                 SwitchPreference(
                     title = stringResource(R.string.preference_terminal_status_line),
                     summary = stringResource(R.string.preference_terminal_status_line_summary),
-                    icon = R.drawable.terminal_24px,
                     value = terminalStatusLine,
                     onValueChanged = {
                         viewModel.setTerminalStatusLine(it)

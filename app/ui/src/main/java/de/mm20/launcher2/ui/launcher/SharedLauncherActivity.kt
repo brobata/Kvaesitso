@@ -167,6 +167,7 @@ abstract class SharedLauncherActivity(
                         val searchBarColor by viewModel.searchBarColor.collectAsState()
                         val searchBarAutofocus by viewModel.autoFocusSearch.collectAsState(false)
                         val terminalStatusLine by viewModel.terminalStatusLine.collectAsState()
+                        val terminalMode by viewModel.terminalMode.collectAsState()
                         val widgetsOnHomeScreen by viewModel.widgetsOnHomeScreen.collectAsState()
                         val wallpaperBlur by viewModel.wallpaperBlur.collectAsState()
                         val wallpaperBlurRadius by viewModel.wallpaperBlurRadius.collectAsState()
@@ -233,8 +234,13 @@ abstract class SharedLauncherActivity(
                         OverlayHost(
                             modifier = Modifier
                                 .background(
-                                    if (dimBackground && darkTheme) Color(0f, 0f, 0f, 0.3f)
-                                    else Color.Transparent
+                                    when {
+                                        // Terminal mode: the wallpaper becomes a faint texture
+                                        // under the theme's ground so text stays readable.
+                                        terminalMode -> MaterialTheme.colorScheme.background.copy(alpha = 0.86f)
+                                        dimBackground && darkTheme -> Color(0f, 0f, 0f, 0.3f)
+                                        else -> Color.Transparent
+                                    }
                                 )
                                 .fillMaxSize(),
                             contentAlignment = Alignment.BottomCenter

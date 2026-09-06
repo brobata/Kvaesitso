@@ -1,5 +1,7 @@
 package de.mm20.launcher2.ui.launcher.widgets
 
+import androidx.compose.ui.graphics.Color
+import de.mm20.launcher2.ui.locals.LocalTerminalMode
 import android.appwidget.AppWidgetManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -70,10 +72,16 @@ fun WidgetItem(
         label = "widgetCardBackgroundOpacity",
     )
 
+    val terminalMode = LocalTerminalMode.current
     LauncherCard(
         modifier = modifier.zIndex(if (isDragged) 1f else 0f),
         elevation = elevation,
         backgroundOpacity = backgroundOpacity,
+        color = when {
+            terminalMode && editMode -> MaterialTheme.colorScheme.surfaceContainer
+            terminalMode -> Color.Transparent
+            else -> MaterialTheme.colorScheme.surface.copy(alpha = backgroundOpacity.coerceIn(0f, 1f))
+        },
     ) {
         Column {
             AnimatedVisibility(editMode) {

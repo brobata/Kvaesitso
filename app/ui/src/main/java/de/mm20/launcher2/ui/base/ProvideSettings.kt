@@ -1,5 +1,6 @@
 package de.mm20.launcher2.ui.base
 
+import de.mm20.launcher2.ui.locals.LocalTerminalMode
 import android.icu.util.Calendar
 import android.icu.util.LocaleData
 import android.icu.util.ULocale
@@ -55,6 +56,10 @@ fun ProvideSettings(
             settings.favoritesEnabled,
         ) { a, b -> a || b }.distinctUntilChanged()
     }.collectAsState(true)
+
+    val terminalMode by remember {
+        settings.terminalMode.distinctUntilChanged()
+    }.collectAsState(false)
 
     val gridSettings by remember {
         settings.gridSettings.distinctUntilChanged()
@@ -125,6 +130,7 @@ fun ProvideSettings(
         LocalFavoritesEnabled provides favoritesEnabled,
         LocalShowAppDetails provides showAppDetails,
         LocalGridSettings provides gridSettings,
+        LocalTerminalMode provides terminalMode,
         LocalTimeFormat provides timeFormat!!,
         LocalMeasurementSystem provides measurementSystem!!,
         LocalCalendarSystems provides calendars,

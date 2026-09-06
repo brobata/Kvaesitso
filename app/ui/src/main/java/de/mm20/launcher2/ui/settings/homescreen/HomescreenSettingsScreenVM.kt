@@ -117,6 +117,13 @@ class HomescreenSettingsScreenVM(
         uiSettings.setHardwareKeyboardSearch(enabled)
     }
 
+    val terminalMode = uiSettings.terminalMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+
+    fun setTerminalMode(enabled: Boolean) {
+        uiSettings.setTerminalMode(enabled)
+    }
+
     val terminalStatusLine = uiSettings.terminalStatusLine
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 

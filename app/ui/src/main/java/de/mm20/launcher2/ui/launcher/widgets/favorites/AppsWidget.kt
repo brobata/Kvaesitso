@@ -1,5 +1,14 @@
 package de.mm20.launcher2.ui.launcher.widgets.favorites
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import de.mm20.launcher2.ui.launcher.sheets.LocalBottomSheetManager
+import de.mm20.launcher2.ui.component.terminal.slugify
+import de.mm20.launcher2.ui.component.terminal.rememberHostSlug
+import de.mm20.launcher2.ui.component.terminal.TerminalKey
+import de.mm20.launcher2.ui.component.terminal.TerminalPrompt
+import de.mm20.launcher2.ui.locals.LocalTerminalMode
 import de.mm20.launcher2.widgets.FavoritesWidgetLayout
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -37,15 +46,32 @@ fun AppsWidget(widget: AppsWidget) {
         viewModel.updateWidget(widget)
     }
 
+    val terminalMode = LocalTerminalMode.current
+    val sheetManager = LocalBottomSheetManager.current
+    val host = rememberHostSlug()
+    val showTagRow = favoritesEditButton || (!customTags && pinnedTags.isNotEmpty()) || (customTags && widget.config.tagList.size > 1)
+
     Column(
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
+        if (terminalMode) {
+            TerminalPrompt(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                host = host,
+                dir = selectedTag?.let { "~/apps/" + slugify(it) } ?: "~/apps",
+                command = "ls",
+            ) {
+                if (favoritesEditButton) {
+                    TerminalKey("edit") { sheetManager.showEditFavoritesSheet() }
+                }
+            }
+        }
         if (favorites.isNotEmpty()) {
-            if (widget.config.layout == FavoritesWidgetLayout.Menu) {
+            if (terminalMode || widget.config.layout == FavoritesWidgetLayout.Menu) {
                 FavoritesMenu(
                     items = favorites,
-                    hotkeys = widget.config.hotkeys,
-                    showIcons = widget.config.menuIcons,
+                    hotkeys = terminalMode || widget.config.hotkeys,
+                    showIcons = !terminalMode && widget.config.menuIcons,
                 )
             } else {
                 SearchResultGrid(favorites, transitionKey = selectedTag)
@@ -59,7 +85,26 @@ fun AppsWidget(widget: AppsWidget) {
                 icon = if (selectedTag == null) R.drawable.star_24px else R.drawable.tag_24px,
             )
         }
-        if (favoritesEditButton || (!customTags && pinnedTags.isNotEmpty()) || (customTags && widget.config.tagList.size > 1)) {
+        if (showTagRow && terminalMode) {
+            val tags = if (customTags) widget.config.tagList.map { Tag(it) } else pinnedTags
+            if (tags.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 2.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    if (!customTags) {
+                        TerminalKey(stringResource(R.string.favorites).lowercase(), active = selectedTag == null) {
+                            viewModel.selectTag(null)
+                        }
+                    }
+                    for (tag in tags) {
+                        TerminalKey(tag.tag, active = selectedTag == tag.tag) { viewModel.selectTag(tag.tag) }
+                    }
+                }
+            }
+        } else if (showTagRow) {
             FavoritesTagSelector(
                 tags = if (customTags) widget.config.tagList.map { Tag(it) } else pinnedTags,
                 selectedTag = selectedTag,

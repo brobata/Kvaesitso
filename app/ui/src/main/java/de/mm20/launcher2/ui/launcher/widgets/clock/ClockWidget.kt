@@ -1,5 +1,6 @@
 package de.mm20.launcher2.ui.launcher.widgets.clock
 
+import de.mm20.launcher2.ui.locals.LocalTerminalMode
 import de.mm20.launcher2.ui.launcher.widgets.clock.clocks.TerminalClock
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -150,6 +151,12 @@ fun ClockWidget(
                 HorizontalDivider()
                 ConfigureClockWidgetSheet(expanded = configure, onDismiss = { configure = false })
             }
+        } else if (LocalTerminalMode.current) {
+            TerminalClockWidget(
+                modifier = modifier,
+                fillScreenHeight = fillScreenHeight,
+                viewModel = viewModel,
+            )
         } else {
             Column(modifier = modifier) {
                 Box(

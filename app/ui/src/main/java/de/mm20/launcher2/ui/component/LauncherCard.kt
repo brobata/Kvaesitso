@@ -1,5 +1,6 @@
 package de.mm20.launcher2.ui.component
 
+import de.mm20.launcher2.ui.locals.LocalTerminalMode
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,7 +19,7 @@ fun LauncherCard(
     elevation: Dp = 2.dp,
     backgroundOpacity: Float = MaterialTheme.transparency.surface,
     shape: Shape = MaterialTheme.shapes.medium,
-    color: Color = MaterialTheme.colorScheme.surface.copy(
+    color: Color = if (LocalTerminalMode.current) Color.Transparent else MaterialTheme.colorScheme.surface.copy(
         alpha = backgroundOpacity.coerceIn(
             0f,
             1f
@@ -32,7 +33,7 @@ fun LauncherCard(
         content = content,
         contentColor = MaterialTheme.colorScheme.onSurface,
         color = color,
-        shadowElevation = if (backgroundOpacity == 1f) elevation else 0.dp,
-        tonalElevation = elevation,
+        shadowElevation = if (backgroundOpacity == 1f && !LocalTerminalMode.current) elevation else 0.dp,
+        tonalElevation = if (LocalTerminalMode.current) 0.dp else elevation,
     )
 }

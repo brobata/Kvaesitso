@@ -1,5 +1,6 @@
 package de.mm20.launcher2.ui.launcher.widgets.calendar
 
+import de.mm20.launcher2.ui.locals.LocalTerminalMode
 import android.content.Context
 import android.icu.text.DateFormat
 import android.icu.util.Calendar
@@ -79,6 +80,11 @@ fun CalendarWidget(
 
     LaunchedEffect(widget) {
         viewModel.updateWidget(widget)
+    }
+
+    if (LocalTerminalMode.current) {
+        TerminalCalendar(viewModel)
+        return
     }
 
     Column {

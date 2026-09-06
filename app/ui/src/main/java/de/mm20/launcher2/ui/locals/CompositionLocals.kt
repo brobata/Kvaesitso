@@ -34,6 +34,9 @@ val LocalSnackbarHostState = compositionLocalOf { SnackbarHostState() }
 
 val LocalDarkTheme = compositionLocalOf { false }
 
+/** Terminal mode: widgets render as command output, cards go flat, icons disappear. */
+val LocalTerminalMode = compositionLocalOf { false }
+
 /**
  * Workaround a bug in Jetpack Compose which incorrectly places popups
  * that are nested inside other popups.

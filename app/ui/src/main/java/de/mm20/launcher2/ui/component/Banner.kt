@@ -1,5 +1,7 @@
 package de.mm20.launcher2.ui.component
 
+import de.mm20.launcher2.ui.component.terminal.TerminalNotice
+import de.mm20.launcher2.ui.locals.LocalTerminalMode
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +33,19 @@ fun Banner(
     primaryAction: (@Composable () -> Unit)? = null,
     secondaryAction: (@Composable () -> Unit)? = null,
 ) {
+    if (LocalTerminalMode.current) {
+        TerminalNotice(
+            modifier = modifier,
+            text = text,
+            actions = if (primaryAction != null || secondaryAction != null) {
+                {
+                    secondaryAction?.invoke()
+                    primaryAction?.invoke()
+                }
+            } else null,
+        )
+        return
+    }
     OutlinedCard(
         modifier = modifier,
         colors = CardDefaults.outlinedCardColors(

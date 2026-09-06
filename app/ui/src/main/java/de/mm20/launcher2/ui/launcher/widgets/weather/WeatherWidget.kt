@@ -1,5 +1,6 @@
 package de.mm20.launcher2.ui.launcher.widgets.weather
 
+import de.mm20.launcher2.ui.locals.LocalTerminalMode
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -189,7 +190,7 @@ fun WeatherWidget(widget: WeatherWidget) {
         }
 
 
-        if (widget.config.terminal) {
+        if (widget.config.terminal || LocalTerminalMode.current) {
             val currentDayForecasts by viewModel.currentDayForecasts
             val currentDailyForecast by viewModel.currentDailyForecast
             TerminalWeather(

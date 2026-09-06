@@ -70,6 +70,8 @@ class LauncherScaffoldVM : ViewModel(), KoinComponent {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     val autoFocusSearch = uiSettings.openKeyboardOnSearch
+    val terminalMode = uiSettings.terminalMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val terminalStatusLine = uiSettings.terminalStatusLine
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
