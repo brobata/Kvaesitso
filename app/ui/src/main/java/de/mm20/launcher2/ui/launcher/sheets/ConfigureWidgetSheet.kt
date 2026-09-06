@@ -1,5 +1,7 @@
 package de.mm20.launcher2.ui.launcher.sheets
 
+import androidx.compose.animation.AnimatedVisibility
+import de.mm20.launcher2.widgets.FavoritesWidgetLayout
 import android.app.Activity
 import android.app.ActivityOptions
 import android.appwidget.AppWidgetManager
@@ -286,6 +288,73 @@ fun ColumnScope.ConfigureFavoritesWidget(
             )
 
             Text(stringResource(R.string.preference_screen_tags))
+        }
+    }
+
+    Row(
+        modifier = Modifier.padding(top = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+    ) {
+        val isMenu = widget.config.layout == FavoritesWidgetLayout.Menu
+        ToggleButton(
+            modifier = Modifier.weight(1f),
+            checked = !isMenu,
+            onCheckedChange = {
+                if (it) onWidgetUpdated(widget.copy(config = widget.config.copy(layout = FavoritesWidgetLayout.Grid)))
+            },
+            shapes = ButtonGroupDefaults.connectedLeadingButtonShapes(),
+        ) {
+            Icon(
+                painterResource(if (!isMenu) R.drawable.check_20px else R.drawable.apps_20px),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = ToggleButtonDefaults.IconSpacing)
+                    .size(ToggleButtonDefaults.IconSize)
+            )
+            Text(stringResource(R.string.widget_config_favorites_layout_grid))
+        }
+        ToggleButton(
+            modifier = Modifier.weight(1f),
+            checked = isMenu,
+            onCheckedChange = {
+                if (it) onWidgetUpdated(widget.copy(config = widget.config.copy(layout = FavoritesWidgetLayout.Menu)))
+            },
+            shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
+        ) {
+            Icon(
+                painterResource(if (isMenu) R.drawable.check_20px else R.drawable.terminal_24px),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = ToggleButtonDefaults.IconSpacing)
+                    .size(ToggleButtonDefaults.IconSize)
+            )
+            Text(stringResource(R.string.widget_config_favorites_layout_menu))
+        }
+    }
+
+    AnimatedVisibility(widget.config.layout == FavoritesWidgetLayout.Menu) {
+        OutlinedCard(
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                SwitchPreference(
+                    title = stringResource(R.string.widget_config_favorites_hotkeys),
+                    summary = stringResource(R.string.widget_config_favorites_hotkeys_summary),
+                    iconPadding = false,
+                    value = widget.config.hotkeys,
+                    onValueChanged = {
+                        onWidgetUpdated(widget.copy(config = widget.config.copy(hotkeys = it)))
+                    }
+                )
+                SwitchPreference(
+                    title = stringResource(R.string.widget_config_favorites_menu_icons),
+                    iconPadding = false,
+                    value = widget.config.menuIcons,
+                    onValueChanged = {
+                        onWidgetUpdated(widget.copy(config = widget.config.copy(menuIcons = it)))
+                    }
+                )
+            }
         }
     }
 

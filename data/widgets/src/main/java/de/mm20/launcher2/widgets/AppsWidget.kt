@@ -7,12 +7,26 @@ import kotlinx.serialization.json.Json
 import java.util.UUID
 
 @Serializable
+enum class FavoritesWidgetLayout {
+    /** Icon grid, the stock layout. */
+    Grid,
+
+    /** One item per line with a number hotkey, launcher-menu style. */
+    Menu,
+}
+
+@Serializable
 data class FavoritesWidgetConfig(
     val customTags: Boolean = false,
     val editButton: Boolean = true,
     val tagsMultiline: Boolean = false,
     val compactTags: Boolean = false,
-    val tagList: List<String> = emptyList()
+    val tagList: List<String> = emptyList(),
+    val layout: FavoritesWidgetLayout = FavoritesWidgetLayout.Grid,
+    /** Menu layout only: pressing 1–9 / 0 on an idle home screen launches the matching row. */
+    val hotkeys: Boolean = true,
+    /** Menu layout only: show a small app icon in front of the label. */
+    val menuIcons: Boolean = true,
 )
 
 data class AppsWidget(

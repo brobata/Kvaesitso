@@ -1,5 +1,6 @@
 package de.mm20.launcher2.ui.launcher.widgets.favorites
 
+import de.mm20.launcher2.widgets.FavoritesWidgetLayout
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -40,7 +41,15 @@ fun AppsWidget(widget: AppsWidget) {
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
         if (favorites.isNotEmpty()) {
-            SearchResultGrid(favorites, transitionKey = selectedTag)
+            if (widget.config.layout == FavoritesWidgetLayout.Menu) {
+                FavoritesMenu(
+                    items = favorites,
+                    hotkeys = widget.config.hotkeys,
+                    showIcons = widget.config.menuIcons,
+                )
+            } else {
+                SearchResultGrid(favorites, transitionKey = selectedTag)
+            }
         } else {
             Banner(
                 modifier = Modifier.padding(16.dp),
