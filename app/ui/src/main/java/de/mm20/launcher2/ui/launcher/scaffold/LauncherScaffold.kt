@@ -1,5 +1,6 @@
 package de.mm20.launcher2.ui.launcher.scaffold
 
+import androidx.compose.runtime.mutableIntStateOf
 import org.koin.compose.koinInject
 import de.mm20.launcher2.ui.launcher.sheets.LocalBottomSheetManager
 import de.mm20.launcher2.ui.launcher.keyboard.LocalHomeHotkeys
@@ -333,6 +334,13 @@ internal class LauncherScaffoldState(
     private var secondaryPageSearchBarOffset by mutableFloatStateOf(0f)
 
     var isSearchBarFocused by mutableStateOf(config.homeComponent is SearchComponent)
+
+    /**
+     * Set while search was opened by hardware typing: the search component must not autofocus
+     * the search field on activation, because focusing (and attaching the IME) mid-burst loses
+     * keys. The scaffold clears it and focuses the field itself once typing pauses.
+     */
+    var deferSearchBarFocus by mutableStateOf(false)
 
     val statusBarScrim by derivedStateOf {
         !isAtTop
@@ -908,6 +916,7 @@ internal class LauncherScaffoldState(
 
     suspend fun reset() {
         isSearchBarFocused = false
+        deferSearchBarFocus = false
         currentOffset3D = Offset3D.Zero
         unlock()
         isSettledOnSecondaryPage = false
@@ -972,6 +981,9 @@ internal class LauncherScaffoldState(
     }
 }
 
+/** Pause in hardware typing after which the search field takes focus (and the IME attaches). */
+private const val HardwareTypingFocusDelayMs = 350L
+
 @Composable
 internal fun LauncherScaffold(
     modifier: Modifier,
@@ -1008,6 +1020,15 @@ internal fun LauncherScaffold(
 
     /** True while some descendant (search field, note widget, ...) owns keyboard focus. */
     var hasDescendantFocus by remember { mutableStateOf(false) }
+
+    /**
+     * Hardware typing feeds the query through the view model while the search field stays
+     * unfocused, and only focuses the field once typing pauses. Focusing mid-burst loses keys:
+     * Compose drops events while the focus change is pending, and afterwards the field edits its
+     * own buffer in the same frame the view model is still catching up. Incremented on every
+     * routed key; the effect below restarts its pause timer each time.
+     */
+    var hardwareTypingTick by remember { mutableIntStateOf(0) }
 
     BoxWithConstraints(
         modifier = modifier
@@ -1073,6 +1094,13 @@ internal fun LauncherScaffold(
                 )
             }
 
+        LaunchedEffect(hardwareTypingTick, state) {
+            if (hardwareTypingTick == 0) return@LaunchedEffect
+            delay(HardwareTypingFocusDelayMs)
+            state.deferSearchBarFocus = false
+            state.isSearchBarFocused = true
+        }
+
         // Hardware keyboard: hotkeys on the idle home screen, otherwise the first printable key
         // opens search and becomes its first character. Never interferes while a text field or a
         // bottom sheet has the keyboard, or while the scaffold is locked (widget edit mode).
@@ -1089,18 +1117,40 @@ internal fun LauncherScaffold(
                     sheetManager.failedGestureSheetShown.value != null
                 ) return@handler false
 
+                val isHomeIdle = !state.isSettledOnSecondaryPage && state.currentProgress == 0f
+                val isSearchOpen = state.currentComponent is SearchComponent && state.isSettledOnSecondaryPage
+                val query = searchVM.searchQuery.value
+
+                // Editing keys while the query is ours (search open, field not yet focused).
+                if (isSearchOpen && query.isNotEmpty()) {
+                    when (event.keyCode) {
+                        KeyEvent.KEYCODE_DEL -> {
+                            searchVM.search(query.dropLast(1))
+                            hardwareTypingTick++
+                            return@handler true
+                        }
+                        KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER -> {
+                            if (launchOnEnter) searchVM.launchBestMatchOrAction(activity)
+                            return@handler true
+                        }
+                    }
+                }
+
                 val codePoint = event.unicodeChar
                 if (codePoint == 0 || Character.isISOControl(codePoint) || Character.isWhitespace(codePoint)) {
                     return@handler false
                 }
                 val char = codePoint.toChar()
 
-                val isHomeIdle = !state.isSettledOnSecondaryPage && state.currentProgress == 0f
                 if (isHomeIdle && homeHotkeys?.dispatch(char) == true) return@handler true
 
                 if (!hardwareKeyboardSearch) return@handler false
-                searchVM.search(searchVM.searchQuery.value + char)
-                state.isSearchBarFocused = true
+                searchVM.search(query + char)
+                if (!isSearchOpen) {
+                    state.deferSearchBarFocus = true
+                    scope.launch { state.onSearchBarTap() }
+                }
+                hardwareTypingTick++
                 true
             }
             onDispose { hardwareKeys.handler = null }

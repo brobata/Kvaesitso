@@ -105,7 +105,7 @@ internal class SearchComponent(
 
     override fun onPreActivate(state: LauncherScaffoldState) {
         super.onPreActivate(state)
-        if (openKeyboard) {
+        if (openKeyboard && !state.deferSearchBarFocus) {
             state.isSearchBarFocused = true
         }
     }

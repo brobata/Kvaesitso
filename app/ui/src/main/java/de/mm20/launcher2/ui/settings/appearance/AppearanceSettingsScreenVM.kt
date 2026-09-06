@@ -11,7 +11,8 @@ import de.mm20.launcher2.themes.RectShapesId
 import de.mm20.launcher2.themes.OpaqueTransparenciesId
 import de.mm20.launcher2.themes.MonospaceId
 import de.mm20.launcher2.themes.DefaultThemeId
-import de.mm20.launcher2.services.widgets.WidgetsService
+import de.mm20.launcher2.preferences.WidgetScreenTarget
+import de.mm20.launcher2.widgets.WidgetRepository
 import de.mm20.launcher2.preferences.ui.ClockWidgetSettings
 import de.mm20.launcher2.preferences.SearchBarStyle
 import androidx.lifecycle.ViewModel
@@ -31,7 +32,7 @@ class AppearanceSettingsScreenVM : ViewModel(), KoinComponent {
 
     private val themeRepository: ThemeRepository by inject()
     private val clockWidgetSettings: ClockWidgetSettings by inject()
-    private val widgetsService: WidgetsService by inject()
+    private val widgetRepository: WidgetRepository by inject()
 
     val colorScheme = uiSettings.colorScheme
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
@@ -92,19 +93,21 @@ class AppearanceSettingsScreenVM : ViewModel(), KoinComponent {
         uiSettings.setHomeScreenWidgets(true)
         clockWidgetSettings.setMonospaced(true)
         viewModelScope.launch {
-            val favoritesWidgets = widgetsService.getWidgets().first().filterIsInstance<AppsWidget>()
+            // Home-screen widgets live under the default widget screen target, not at the root.
+            val homeScreen = WidgetScreenTarget.Default.id
+            val homeWidgets = widgetRepository.get(parent = homeScreen).first()
+            val favoritesWidgets = homeWidgets.filterIsInstance<AppsWidget>()
             if (favoritesWidgets.isEmpty()) {
-                widgetsService.addWidget(
-                    AppsWidget(
-                        id = UUID.randomUUID(),
-                        config = FavoritesWidgetConfig(layout = FavoritesWidgetLayout.Menu),
-                    ),
-                    position = 0,
+                // set() renumbers positions, so the menu lands above the stock widgets.
+                val menu = AppsWidget(
+                    id = UUID.randomUUID(),
+                    config = FavoritesWidgetConfig(layout = FavoritesWidgetLayout.Menu),
                 )
+                widgetRepository.set(listOf(menu) + homeWidgets, homeScreen)
             } else {
                 for (widget in favoritesWidgets) {
                     if (widget.config.layout == FavoritesWidgetLayout.Menu) continue
-                    widgetsService.updateWidget(
+                    widgetRepository.update(
                         widget.copy(config = widget.config.copy(layout = FavoritesWidgetLayout.Menu))
                     )
                 }
