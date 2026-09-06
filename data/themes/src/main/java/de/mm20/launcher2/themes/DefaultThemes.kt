@@ -7,12 +7,14 @@ val DefaultThemeId = UUID(0L, 0L)
 
 val HighContrastThemeId = UUID(0L, 2L)
 val BlackAndWhiteThemeId = UUID(0L, 1L)
+val TerminalThemeId = UUID(0L, 3L)
 
 val ExtraRoundShapesId = UUID(0L, 1L)
 val CutShapesId = UUID(0L, 2L)
 val RectShapesId = UUID(0L, 3L)
 
 val SemiTransparentId = UUID(0L, 1L)
+val OpaqueTransparenciesId = UUID(0L, 2L)
 
 val SystemFontId = UUID(0L, 1L)
 val MonospaceId = UUID(0L, 2L)

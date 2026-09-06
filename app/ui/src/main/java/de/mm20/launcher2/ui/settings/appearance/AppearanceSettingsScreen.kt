@@ -64,6 +64,22 @@ fun AppearanceSettingsScreen() {
             }
         }
         item {
+            PreferenceCategory(stringResource(R.string.preference_category_presets)) {
+                Preference(
+                    title = stringResource(R.string.preference_preset_terminal),
+                    summary = stringResource(R.string.preference_preset_terminal_summary),
+                    icon = R.drawable.terminal_24px,
+                    onClick = { viewModel.applyTerminalPreset() },
+                )
+                Preference(
+                    title = stringResource(R.string.preference_preset_default),
+                    summary = stringResource(R.string.preference_preset_default_summary),
+                    icon = R.drawable.palette_24px,
+                    onClick = { viewModel.applyDefaultPreset() },
+                )
+            }
+        }
+        item {
             PreferenceCategory {
                 Preference(
                     title = stringResource(id = R.string.preference_screen_colors),

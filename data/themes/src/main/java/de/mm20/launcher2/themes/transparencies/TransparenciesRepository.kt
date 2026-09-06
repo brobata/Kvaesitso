@@ -5,6 +5,7 @@ import de.mm20.launcher2.database.AppDatabase
 import de.mm20.launcher2.themes.DefaultThemeId
 import de.mm20.launcher2.themes.R
 import de.mm20.launcher2.themes.SemiTransparentId
+import de.mm20.launcher2.themes.OpaqueTransparenciesId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,6 +30,7 @@ class TransparenciesRepository(
     fun get(id: UUID): Flow<Transparencies?> {
         if (id == DefaultThemeId) return flowOf(default)
         if (id == SemiTransparentId) return flowOf(semiTransparent)
+        if (id == OpaqueTransparenciesId) return flowOf(opaque)
         return database.themeDao().getTransparencies(id).map { it?.let { Transparencies(it) } }
     }
 
@@ -60,6 +62,7 @@ class TransparenciesRepository(
         return listOf(
             default,
             semiTransparent,
+            opaque,
         )
     }
 
@@ -84,4 +87,14 @@ class TransparenciesRepository(
             elevatedSurface = 0.85f,
         )
 
+
+    private val opaque: Transparencies
+        get() = Transparencies(
+            id = OpaqueTransparenciesId,
+            builtIn = true,
+            name = context.getString(R.string.preference_transparencies_opaque),
+            background = 1f,
+            surface = 1f,
+            elevatedSurface = 1f,
+        )
 }

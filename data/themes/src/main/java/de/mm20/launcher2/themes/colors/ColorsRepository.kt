@@ -3,6 +3,7 @@ package de.mm20.launcher2.themes.colors
 import android.content.Context
 import de.mm20.launcher2.database.AppDatabase
 import de.mm20.launcher2.themes.BlackAndWhiteThemeId
+import de.mm20.launcher2.themes.TerminalThemeId
 import de.mm20.launcher2.themes.DefaultThemeId
 import de.mm20.launcher2.themes.HighContrastThemeId
 import de.mm20.launcher2.themes.R
@@ -32,6 +33,7 @@ class ColorsRepository(
         if (id == DefaultThemeId) return flowOf(default)
         if (id == HighContrastThemeId) return flowOf(highContrast)
         if (id == BlackAndWhiteThemeId) return flowOf(blackAndWhite)
+        if (id == TerminalThemeId) return flowOf(terminal)
         return database.themeDao().getColors(id).map { it?.let { Colors(it) } }
             .flowOn(Dispatchers.Default)
     }
@@ -65,6 +67,7 @@ class ColorsRepository(
             default,
             highContrast,
             blackAndWhite,
+            terminal,
         )
     }
 
@@ -98,5 +101,15 @@ class ColorsRepository(
             corePalette = EmptyCorePalette,
             lightColorScheme = BlackAndWhiteLightColorScheme,
             darkColorScheme = BlackAndWhiteDarkColorScheme,
+        )
+
+    private val terminal: Colors
+        get() = Colors(
+            id = TerminalThemeId,
+            builtIn = true,
+            name = context.getString(R.string.preference_colors_terminal),
+            corePalette = EmptyCorePalette,
+            lightColorScheme = TerminalLightColorScheme,
+            darkColorScheme = TerminalDarkColorScheme,
         )
 }
