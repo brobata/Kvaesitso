@@ -178,6 +178,15 @@ fun ColumnScope.ConfigureWeatherWidget(
                     onWidgetUpdated(widget.copy(config = widget.config.copy(showForecast = !it)))
                 }
             )
+            SwitchPreference(
+                title = stringResource(R.string.widget_config_weather_terminal),
+                summary = stringResource(R.string.widget_config_weather_terminal_summary),
+                iconPadding = false,
+                value = widget.config.terminal,
+                onValueChanged = {
+                    onWidgetUpdated(widget.copy(config = widget.config.copy(terminal = it)))
+                }
+            )
         }
     }
     TextButton(

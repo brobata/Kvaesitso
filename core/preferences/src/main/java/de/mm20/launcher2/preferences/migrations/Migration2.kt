@@ -25,6 +25,7 @@ class Migration2 : DataMigration<LauncherSettingsData> {
                 is ClockWidgetStyle.Analog -> ClockWidgetStyleEnum.Analog
                 is ClockWidgetStyle.Binary -> ClockWidgetStyleEnum.Binary
                 is ClockWidgetStyle.Segment -> ClockWidgetStyleEnum.Segment
+                is ClockWidgetStyle.Terminal -> ClockWidgetStyleEnum.Terminal
                 is ClockWidgetStyle.Empty -> ClockWidgetStyleEnum.Empty
                 else -> ClockWidgetStyleEnum.Digital1
             }

@@ -199,6 +199,8 @@ internal data class ScaffoldConfiguration(
      */
     val finishOnBack: Boolean = false,
     val darkSearchBar: Boolean = false,
+    /** Pin a tmux-style status line to the bottom edge. */
+    val statusLine: Boolean = false,
 ) {
     val searchBarTap = ScaffoldGesture(
         component = searchComponent,
@@ -1385,7 +1387,8 @@ internal fun LauncherScaffold(
         ) {
             val searchBarInsets = WindowInsets(
                 top = if (config.searchBarPosition == SearchBarPosition.Top) searchBarHeight + 8.dp else 8.dp,
-                bottom = if (config.searchBarPosition == SearchBarPosition.Bottom) searchBarHeight + 8.dp else 8.dp
+                bottom = (if (config.searchBarPosition == SearchBarPosition.Bottom) searchBarHeight + 8.dp else 8.dp) +
+                        (if (config.statusLine) TerminalStatusLineHeight else 0.dp)
             )
 
             val filterBarInsets = WindowInsets(
@@ -1488,6 +1491,12 @@ internal fun LauncherScaffold(
                     isSearchOpen = state.currentComponent is SearchComponent && state.isSettledOnSecondaryPage ||
                             config.homeComponent is SearchComponent && !state.isSettledOnSecondaryPage,
                 )
+                if (config.statusLine) {
+                    TerminalStatusLine(
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        searchActive = state.currentComponent is SearchComponent && state.isSettledOnSecondaryPage,
+                    )
+                }
             }
             if (isFilterBarVisible) {
                 Box(

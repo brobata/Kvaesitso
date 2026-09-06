@@ -1,5 +1,6 @@
 package de.mm20.launcher2.ui.launcher.widgets.clock
 
+import de.mm20.launcher2.ui.launcher.widgets.clock.clocks.TerminalClock
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -317,6 +318,15 @@ fun Clock(
         )
 
         is ClockWidgetStyle.Segment -> SegmentClock(
+            time = time,
+            compact = compact,
+            showSeconds = showSeconds,
+            twentyFourHours = isTwentyFourHours,
+            useThemeColor = useThemeColor,
+            darkColors = darkColors,
+        )
+
+        is ClockWidgetStyle.Terminal -> TerminalClock(
             time = time,
             compact = compact,
             showSeconds = showSeconds,

@@ -166,6 +166,7 @@ abstract class SharedLauncherActivity(
                         val searchBarStyle by viewModel.searchBarStyle.collectAsState()
                         val searchBarColor by viewModel.searchBarColor.collectAsState()
                         val searchBarAutofocus by viewModel.autoFocusSearch.collectAsState(false)
+                        val terminalStatusLine by viewModel.terminalStatusLine.collectAsState()
                         val widgetsOnHomeScreen by viewModel.widgetsOnHomeScreen.collectAsState()
                         val wallpaperBlur by viewModel.wallpaperBlur.collectAsState()
                         val wallpaperBlurRadius by viewModel.wallpaperBlurRadius.collectAsState()
@@ -259,6 +260,7 @@ abstract class SharedLauncherActivity(
                                 searchBarAutofocus,
                                 wallpaperBlur,
                                 wallpaperBlurRadius,
+                                terminalStatusLine,
                             ) {
                                 if (mode == LauncherActivityMode.Assistant) {
                                     val searchComponent = SearchComponent(
@@ -419,6 +421,7 @@ abstract class SharedLauncherActivity(
                                         showNavBar = !hideNav,
                                         darkSearchBar = darkSearchBar,
                                         wallpaperBlurRadius = if (wallpaperBlur) wallpaperBlurRadius.dp else 0.dp,
+                                        statusLine = terminalStatusLine,
                                     )
 
                                     if (config.isUseless()) config.copy(

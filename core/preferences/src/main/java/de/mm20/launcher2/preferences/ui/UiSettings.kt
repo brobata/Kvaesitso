@@ -279,6 +279,17 @@ class UiSettings internal constructor(
         }
     }
 
+    val terminalStatusLine
+        get() = launcherDataStore.data.map {
+            it.uiTerminalStatusLine
+        }.distinctUntilChanged()
+
+    fun setTerminalStatusLine(enabled: Boolean) {
+        launcherDataStore.update {
+            it.copy(uiTerminalStatusLine = enabled)
+        }
+    }
+
     val openKeyboardOnSearch
         get() = launcherDataStore.data.map {
             it.searchBarKeyboard

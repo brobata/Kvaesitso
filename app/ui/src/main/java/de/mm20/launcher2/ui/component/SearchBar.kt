@@ -165,7 +165,7 @@ fun SearchBar(
                     if (style == SearchBarStyle.Terminal) {
                         Text(
                             modifier = Modifier.padding(start = 16.dp, end = 10.dp),
-                            text = "$",
+                            text = "❯",
                             style = inputTextStyle.copy(fontWeight = FontWeight.Bold),
                             color = contentColor,
                         )

@@ -70,6 +70,8 @@ class LauncherScaffoldVM : ViewModel(), KoinComponent {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     val autoFocusSearch = uiSettings.openKeyboardOnSearch
+    val terminalStatusLine = uiSettings.terminalStatusLine
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     val wallpaperBlur = uiSettings.blurWallpaper
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)

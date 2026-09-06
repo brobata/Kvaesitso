@@ -189,6 +189,19 @@ fun WeatherWidget(widget: WeatherWidget) {
         }
 
 
+        if (widget.config.terminal) {
+            val currentDayForecasts by viewModel.currentDayForecasts
+            val currentDailyForecast by viewModel.currentDailyForecast
+            TerminalWeather(
+                forecast = forecast,
+                dayForecasts = currentDayForecasts,
+                daily = currentDailyForecast,
+                measurementSystem = measurementSystem,
+                timeFormat = timeFormat,
+            )
+            return@Column
+        }
+
         CurrentWeather(forecast, measurementSystem, timeFormat)
 
         if (!compactMode) {

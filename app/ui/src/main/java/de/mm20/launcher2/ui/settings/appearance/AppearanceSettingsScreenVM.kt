@@ -1,5 +1,7 @@
 package de.mm20.launcher2.ui.settings.appearance
 
+import de.mm20.launcher2.widgets.WeatherWidget
+import de.mm20.launcher2.preferences.ClockWidgetStyle
 import java.util.UUID
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
@@ -91,7 +93,10 @@ class AppearanceSettingsScreenVM : ViewModel(), KoinComponent {
         uiSettings.setGridShowList(true)
         uiSettings.setDimWallpaper(true)
         uiSettings.setHomeScreenWidgets(true)
+        uiSettings.setTerminalStatusLine(true)
         clockWidgetSettings.setMonospaced(true)
+        clockWidgetSettings.setClockStyle(ClockWidgetStyle.Terminal)
+        clockWidgetSettings.setDatePart(false)
         viewModelScope.launch {
             // Home-screen widgets live under the default widget screen target, not at the root.
             val homeScreen = WidgetScreenTarget.Default.id
@@ -112,6 +117,10 @@ class AppearanceSettingsScreenVM : ViewModel(), KoinComponent {
                     )
                 }
             }
+            for (widget in homeWidgets.filterIsInstance<WeatherWidget>()) {
+                if (widget.config.terminal) continue
+                widgetRepository.update(widget.copy(config = widget.config.copy(terminal = true)))
+            }
         }
     }
 
@@ -125,6 +134,9 @@ class AppearanceSettingsScreenVM : ViewModel(), KoinComponent {
         uiSettings.setSearchBarStyle(SearchBarStyle.Transparent)
         uiSettings.setGridShowList(false)
         uiSettings.setDimWallpaper(false)
+        uiSettings.setTerminalStatusLine(false)
         clockWidgetSettings.setMonospaced(false)
+        clockWidgetSettings.setClockStyle(ClockWidgetStyle.Digital1())
+        clockWidgetSettings.setDatePart(true)
     }
 }

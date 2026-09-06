@@ -10,6 +10,8 @@ import java.util.UUID
 @Serializable
 data class WeatherWidgetConfig(
     val showForecast: Boolean = true,
+    /** Render as monospace text lines instead of the icon card. */
+    val terminal: Boolean = false,
 )
 
 data class WeatherWidget(
